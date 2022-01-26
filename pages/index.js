@@ -83,7 +83,6 @@ export default function PaginaInicial() {
             padding: "32px 64px",
             margin: "16px",
             boxShadow: "0 2px 10px 0 rgb(0 0 0 / 20%)",
-            //borderRadius: "80px 80px 0px 80px",
             backgroundImage: "url(https://images8.alphacoders.com/381/381805.jpg)",
             backgroundSize: "contain",
             backgroundColor: appConfig.theme.colors.neutrals[500],

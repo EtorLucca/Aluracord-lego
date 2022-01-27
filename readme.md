@@ -13,3 +13,6 @@ Aprendizados durante a elaboração do projeto:
 Styled Components
 React/Next - Hooks, Components
 Github - interação com os dados públicos do Github
+
+<img src="./public/index.png">
+<img src="./public/chat.png">

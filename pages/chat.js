@@ -1,19 +1,21 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React, { useState } from "react";
 import appConfig from "../config.json";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
 export default function ChatPage() {
-  const [mensagem, setMensagem] = useState("");
+  const [textoMsg, setTextoMsg] = useState("");
   const [listaMensagens, setListaMensagens] = useState([]);
 
-  function handleNovaMensagem(novaMensagem) {
+  function handleNovaMensagem(texto) {
     const mensagem = {
       id: listaMensagens.length + 1,
-      de: "vanessametonini",
-      texto: novaMensagem,
+      de: "EtorLucca",
+      texto: texto,
     };
     setListaMensagens([mensagem, ...listaMensagens]);
-    setMensagem("");
+    setTextoMsg("");
   }
 
   return (
@@ -56,30 +58,34 @@ export default function ChatPage() {
             padding: "16px",
           }}
         >
-          <MessageList mensagens={listaMensagens} />
+          <MessageList
+            mensagens={listaMensagens}
+            setMensagens={setListaMensagens}
+          />
 
           <Box
             as="form"
             styleSheet={{
               display: "flex",
-              alignItems: "center",
+              alignItems: "center"
             }}
           >
             <TextField
+              autoFocus
               placeholder="Insira sua mensagem aqui..."
-              value={mensagem}
+              value={textoMsg}
               onChange={(e) => {
-                setMensagem(e.target.value);
+                setTextoMsg(e.target.value);
               }}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  handleNovaMensagem(mensagem);
+                  handleNovaMensagem(textoMsg);
                 }
               }}
               type="textarea"
               styleSheet={{
-                width: "100%",
+                width: "95%",
                 border: "0",
                 resize: "none",
                 borderRadius: "5px",
@@ -88,6 +94,22 @@ export default function ChatPage() {
                 marginRight: "12px",
                 color: appConfig.theme.colors.neutrals[200],
               }}
+            />
+            <FontAwesomeIcon
+              onClick={(e) => {
+                if (textoMsg.length > 0) {
+                  e.preventDefault();
+                  handleNovaMensagem(textoMsg);
+                }
+              }}
+              style={{
+                cursor: "pointer",
+                color: "white",
+                fontSize: "30px",
+                margin: "5px",
+                padding: "5px",
+              }}
+              icon={faPaperPlane}
             />
           </Box>
         </Box>
@@ -121,13 +143,19 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log(props);
+  function handleDelete(id) {
+    //console.log(id);
+    //console.log(props);
+    //console.log(props.mensagens);
+
+    props.setMensagens(props.mensagens.filter((i) => i.id !== id));
+  }
+
   return (
     <Box
       tag="ul"
       styleSheet={{
         overflow: "auto",
-        scrollbarColor: "dark",
         display: "flex",
         flexDirection: "column-reverse",
         flex: 1,
@@ -151,6 +179,8 @@ function MessageList(props) {
           >
             <Box
               styleSheet={{
+                display: "flex",
+                alignItems: "center",
                 marginBottom: "8px",
               }}
             >
@@ -162,7 +192,7 @@ function MessageList(props) {
                   display: "inline-block",
                   marginRight: "8px",
                 }}
-                src={`https://github.com/vanessametonini.png`}
+                src={`https://github.com/EtorLucca.png`}
               />
               <Text tag="strong">{mensagem.de}</Text>
               <Text
@@ -175,6 +205,14 @@ function MessageList(props) {
               >
                 {new Date().toLocaleDateString()}
               </Text>
+              <FontAwesomeIcon
+                onClick={() => handleDelete(mensagem.id)}
+                style={{
+                  marginLeft: "10px",
+                  cursor: "pointer",
+                }}
+                icon={faTrashAlt}
+              />
             </Box>
             {mensagem.texto}
           </Text>

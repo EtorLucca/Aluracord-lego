@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import appConfig from "../config.json";
 import { useRouter } from "next/router";
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserFriends } from "@fortawesome/free-solid-svg-icons";
 
 function Title(props) {
   const Tag = props.tag || "h1";
@@ -233,14 +235,16 @@ export default function PaginaInicial() {
                 borderRadius: "1000px",
               }}
             >
-              <i class="fas fa-user-friends"></i>{` ${userData.followers} followers`}
+              <FontAwesomeIcon
+								icon={faUserFriends}
+							/>
+              {` ${userData.followers} followers`}
             </Text>
 
           </Box>
           {/* Photo Area */}
         </Box>
       </Box>
-      <script src="https://kit.fontawesome.com/389645fe7b.js" crossorigin="anonymous"></script>
     </>
   );
 }

@@ -14,5 +14,5 @@ Styled Components
 React/Next - Hooks, Components
 Github - interação com os dados públicos do Github
 
-<img src="./public/index.png">
-<img src="./public/chat.png">
+<img src="./public/index.jpg">
+<img src="./public/chat.jpg">

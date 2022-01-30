@@ -15,5 +15,5 @@ Aprendizados durante a elaboração do projeto:
 - React/Next - Hooks, Components
 - Github - interação com os dados públicos do Github
 
-<img src="./public/index.jpg">
-<img src="./public/chat.jpg">
+<img src="./public/img/index.jpg">
+<img src="./public/img/chat.jpg">

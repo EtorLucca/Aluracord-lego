@@ -1,20 +1,65 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import appConfig from "../config.json";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import { createClient } from "@supabase/supabase-js";
+import LoadingPage from "../components/loading";
+import UserCard from "./card";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMwNTIzMCwiZXhwIjoxOTU4ODgxMjMwfQ.OOABSmkcz3c3T7dwxkpGVFCFXgrtn8KPwUJzJakrO5M";
+const SUPABASE_URL = "https://guxoddrtdsqmmqqjxoph.supabase.co";
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
   const [textoMsg, setTextoMsg] = useState("");
   const [listaMensagens, setListaMensagens] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 600);
+    supabaseClient
+      .from("mensagens")
+      .select("*")
+      .order("id", { ascending: false })
+      .then(({ data }) => {
+        setListaMensagens(data);
+      });
+  }, []);
+
+  function PageSelector() {
+    if (loading) {
+      return (
+        <>
+          <LoadingPage />
+          <LoadingPage />
+          <LoadingPage />
+        </>
+      );
+    } else {
+      return (
+        <MessageList
+          mensagens={listaMensagens}
+          setMensagens={setListaMensagens}
+        />
+      );
+    }
+  }
 
   function handleNovaMensagem(texto) {
     const mensagem = {
-      id: listaMensagens.length + 1,
       de: "EtorLucca",
       texto: texto,
     };
-    setListaMensagens([mensagem, ...listaMensagens]);
+
+    supabaseClient
+      .from("mensagens")
+      .insert([mensagem])
+      .then(({ data }) => {
+        setListaMensagens([data[0], ...listaMensagens]);
+      });
+
     setTextoMsg("");
   }
 
@@ -25,7 +70,7 @@ export default function ChatPage() {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: appConfig.theme.colors.primary[500],
-        backgroundImage: `url(https://images3.alphacoders.com/890/890399.jpg)`,
+        backgroundImage: `url(https://cdn.pixabay.com/photo/2018/08/16/10/36/lego-3610098_960_720.jpg)`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "100% 120%",
         color: appConfig.theme.colors.neutrals["000"],
@@ -58,16 +103,13 @@ export default function ChatPage() {
             padding: "16px",
           }}
         >
-          <MessageList
-            mensagens={listaMensagens}
-            setMensagens={setListaMensagens}
-          />
+          <PageSelector />
 
           <Box
             as="form"
             styleSheet={{
               display: "flex",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <TextField
@@ -143,11 +185,8 @@ function Header() {
 }
 
 function MessageList(props) {
-  function handleDelete(id) {
-    //console.log(id);
-    //console.log(props);
-    //console.log(props.mensagens);
-
+  async function handleDelete(id) {
+    await supabaseClient.from("mensagens").delete().match({ id: id });
     props.setMensagens(props.mensagens.filter((i) => i.id !== id));
   }
 
@@ -164,8 +203,21 @@ function MessageList(props) {
       }}
     >
       {props.mensagens.map((mensagem) => {
+        function show(id) {
+          //console.log("show", id);
+          document.getElementById(`card + ${id}`).style.display = "flex";
+        }
+
+        async function reset(id) {
+          //console.log("reset", id);
+          document.getElementById(`card + ${id}`).style.display = "none";
+        }
         return (
           <Text
+            id={mensagem.de}
+            onMouseLeave={(e) => {
+              reset(e.target.id);
+            }}
             key={mensagem.id}
             tag="li"
             styleSheet={{
@@ -177,6 +229,9 @@ function MessageList(props) {
               },
             }}
           >
+            {/* -----------------------------------------------------------------------------------------------------------    */}
+            <UserCard id={mensagem.de} />
+            {/* -----------------------------------------------------------------------------------------------------------    */}
             <Box
               styleSheet={{
                 display: "flex",
@@ -185,16 +240,22 @@ function MessageList(props) {
               }}
             >
               <Image
+                id={mensagem.de}
+                onMouseEnter={(e) => {
+                  show(e.target.id);
+                }}
                 styleSheet={{
-                  width: "20px",
-                  height: "20px",
+                  width: "30px",
+                  height: "30px",
                   borderRadius: "50%",
                   display: "inline-block",
                   marginRight: "8px",
                 }}
-                src={`https://github.com/EtorLucca.png`}
+                src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong">{mensagem.de}</Text>
+              <Text tag="strong" id={mensagem.de}>
+                {mensagem.de}
+              </Text>
               <Text
                 styleSheet={{
                   fontSize: "10px",

@@ -53,10 +53,10 @@ export default function PaginaInicial() {
           justifyContent: "center",
           backgroundColor: appConfig.theme.colors.primary[500],
           backgroundImage:
-            "url(https://images3.alphacoders.com/890/890399.jpg)",
+            "url(https://cdn.pixabay.com/photo/2018/08/16/10/36/lego-3610098_960_720.jpg)",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "bottom right",
-          backgroundSize: "100% 120%",
+          backgroundSize: "100% 100%",
         }}
       >
         <Box
@@ -74,10 +74,7 @@ export default function PaginaInicial() {
             padding: "32px 64px",
             margin: "16px",
             boxShadow: "0 2px 10px 0 rgb(0 0 0 / 20%)",
-            backgroundImage:
-              "url(https://images8.alphacoders.com/381/381805.jpg)",
-            backgroundSize: "contain",
-            backgroundColor: appConfig.theme.colors.neutrals[500],
+            backgroundColor: appConfig.theme.colors.secondary[500],
             backgroundBlendMode: "multiply",
           }}
         >

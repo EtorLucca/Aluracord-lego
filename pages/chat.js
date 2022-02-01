@@ -1,10 +1,12 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import appConfig from "../config.json";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { createClient } from "@supabase/supabase-js";
-import LoadingPage from "../components/loading";
+import LoadingPage from "../src/components/loading";
+import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
 import UserCard from "./card";
 
 const SUPABASE_ANON_KEY =
@@ -12,7 +14,18 @@ const SUPABASE_ANON_KEY =
 const SUPABASE_URL = "https://guxoddrtdsqmmqqjxoph.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function realTime(addMensagem){
+  return supabaseClient
+    .from("mensagens")
+    .on("INSERT", (live) => {
+      addMensagem(live.new);
+    })
+    .subscribe();
+}
+
 export default function ChatPage() {
+  const router = useRouter();
+  const usuarioLogado = router.query.username;
   const [textoMsg, setTextoMsg] = useState("");
   const [listaMensagens, setListaMensagens] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +38,12 @@ export default function ChatPage() {
       .order("id", { ascending: false })
       .then(({ data }) => {
         setListaMensagens(data);
+      });
+
+      realTime((newMessage) => {
+        setListaMensagens((currentListValue) => {
+          return [newMessage, ...currentListValue]
+        });
       });
   }, []);
 
@@ -47,17 +66,17 @@ export default function ChatPage() {
     }
   }
 
-  function handleNovaMensagem(texto) {
+  function handleNovaMensagem(newMessage) {
     const mensagem = {
-      de: "EtorLucca",
-      texto: texto,
+      de: usuarioLogado,
+      texto: newMessage,
     };
 
     supabaseClient
       .from("mensagens")
       .insert([mensagem])
       .then(({ data }) => {
-        setListaMensagens([data[0], ...listaMensagens]);
+        console.log(data);
       });
 
     setTextoMsg("");
@@ -137,6 +156,9 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+            <ButtonSendSticker onStickerClick={(sticker) => {
+              handleNovaMensagem(":sticker: " + sticker);
+            }} />
             <FontAwesomeIcon
               onClick={(e) => {
                 if (textoMsg.length > 0) {
@@ -275,7 +297,14 @@ function MessageList(props) {
                 icon={faTrashAlt}
               />
             </Box>
-            {mensagem.texto}
+            {mensagem.texto.startsWith(":sticker:")
+              ? <Image 
+                  src={mensagem.texto.replace(":sticker:", "")}
+                  styleSheet={{
+                    maxWidth: "100px",
+                  }}
+                />
+              : mensagem.texto}
           </Text>
         );
       })}

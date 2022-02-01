@@ -1,5 +1,5 @@
 import { Box, Text } from "@skynexui/components";
-import appConfig from "../config.json";
+import appConfig from "../../config.json";
 import React from "react";
 
 export default function LoadingPage() {

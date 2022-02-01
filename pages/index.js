@@ -83,7 +83,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={(e) => {
               e.preventDefault();
-              router.push("/chat");
+              router.push(`/chat?username=${userName}`);
             }}
             styleSheet={{
               display: "flex",
